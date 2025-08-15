@@ -1,8 +1,7 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
 from telegram.ext import ContextTypes
 from config import ADMIN_ID, AFFILIATE_CODE, HOTLINE, AFFILIATE_LINK
-
-user_spin_status = {}
+from database import register_user, can_spin_today, update_spin, get_user_stats, get_leaderboard
 
 def get_language(update: Update):
     return update.effective_user.language_code or "vi"
@@ -12,6 +11,7 @@ def translate(texts: dict, lang: str):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = get_language(update)
+    await register_user(update.effective_user.id, update.effective_user.username)
     text = translate({
         "vi": "👋 Chào mừng đến với sòng bạc Kèo Sư! Gõ /spin để quay số, biết đâu hôm nay bạn thành đại gia 💸",
         "en": "👋 Welcome to KeoSu Casino! Type /spin to try your luck and maybe become a millionaire 💸"
@@ -19,30 +19,33 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text)
 
 async def spin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    lang = get_language(update)
+    user = update.effective_user
+    await register_user(user.id, user.username)
 
-    if user_spin_status.get(user_id):
-        text = translate({
-            "vi": "⛔ Hôm nay quay rồi nha, tham quá là bị khóa nick đó 😤",
-            "en": "⛔ You've already spun today! Greedy much? 😤"
-        }, lang)
-    else:
-        user_spin_status[user_id] = True
-        prize = "🎁 100 xu thần thánh"
-        text = translate({
-            "vi": f"🎉 Chúc mừng! Bạn vừa hốt được {prize}. Đi nhậu được rồi đó!",
-            "en": f"🎉 Congrats! You just won {prize}. Time to party!"
-        }, lang)
-        await context.bot.send_message(chat_id=ADMIN_ID, text=f"🔥 User {user_id} spun and won: {prize}")
+    if not await can_spin_today(user.id):
+        await update.message.reply_text("⛔ Hôm nay quay rồi nha, mai quay tiếp nhé!")
+        return
 
-    await update.message.reply_text(text)
+    prize = 100
+    await update_spin(user.id, prize)
+    await update.message.reply_text(f"🎉 Bạn vừa hốt được {prize} xu! Quá đỉnh 😎")
+    await context.bot.send_message(chat_id=ADMIN_ID, text=f"🔥 {user.username} ({user.id}) quay trúng {prize} xu")
 
 async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🏆 Bảng vàng Kèo Sư:\n🥇 Long Rồng - 999 xu\n🥈 Bé Na - 888 xu\n🥉 Bạn - 777 xu")
+    top = await get_leaderboard()
+    msg = "🏆 Bảng vàng Kèo Sư:\n"
+    for i, (username, coins) in enumerate(top, start=1):
+        name = username or f"User{i}"
+        msg += f"{i}. {name} - {coins} xu\n"
+    await update.message.reply_text(msg)
 
 async def dashboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📊 Dashboard của bạn:\n- Số lần quay: 1\n- Tổng xu: 100\n- Độ may mắn: 69%")
+    stats = await get_user_stats(update.effective_user.id)
+    if stats:
+        spins, coins = stats
+        await update.message.reply_text(f"📊 Dashboard:\n- Số lần quay: {spins}\n- Tổng xu: {coins}")
+    else:
+        await update.message.reply_text("📊 Bạn chưa quay lần nào. Gõ /spin để thử vận may!")
 
 async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
