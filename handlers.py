@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from config import ADMIN_ID, AFFILIATE_CODE, HOTLINE, AFFILIATE_LINK
+from config import ADMIN_ID, AGENT_CODE, HOTLINE, AFFILIATE_LINK
 from database import register_user, can_spin_today, update_spin, get_user_stats, get_leaderboard
 
 def get_language(update: Update):
