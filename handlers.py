@@ -1,73 +1,90 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
-from config import ADMIN_ID, AGENT_CODE, PHONE, AFF_LINK, FORM_VI, FORM_EN
+from config import ADMIN_ID, AFFILIATE_CODE, HOTLINE, AFFILIATE_LINK
 
-# /start
+user_spin_status = {}
+
+def get_language(update: Update):
+    return update.effective_user.language_code or "vi"
+
+def translate(texts: dict, lang: str):
+    return texts.get(lang, texts["vi"])
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton("🇻🇳 Tiếng Việt", callback_data="vi")],
-        [InlineKeyboardButton("🇺🇸 English", callback_data="en")]
-    ]
-    await update.message.reply_text("Chọn ngôn ngữ / Choose your language:", reply_markup=InlineKeyboardMarkup(keyboard))
+    lang = get_language(update)
+    text = translate({
+        "vi": "👋 Chào mừng đến với sòng bạc Kèo Sư! Gõ /spin để quay số, biết đâu hôm nay bạn thành đại gia 💸",
+        "en": "👋 Welcome to KeoSu Casino! Type /spin to try your luck and maybe become a millionaire 💸"
+    }, lang)
+    await update.message.reply_text(text)
 
-# Callback ngôn ngữ
-async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    lang = query.data
-    if lang == "vi":
-        await query.message.reply_text(f"Đăng ký tại đây: {FORM_VI}\nMã đại lý: {AGENT_CODE}\nHotline: {PHONE}\nLink: {AFF_LINK}")
-    else:
-        await query.message.reply_text(f"Register here: {FORM_EN}\nAgent Code: {AGENT_CODE}\nHotline: {PHONE}\nLink: {AFF_LINK}")
-
-# /info
-async def register_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"Website: {AFF_LINK}\nAgent Code: {AGENT_CODE}\nHotline: {PHONE}")
-
-# /keosu
-async def vpn_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Kèo sư: https://keosu.com")
-    await context.bot.forward_message(chat_id=ADMIN_ID, from_chat_id=update.effective_chat.id, message_id=update.message.message_id)
-
-# /spin
-user_spins = {}
-
-async def spin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def spin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    if user_spins.get(user_id):
-        await update.message.reply_text("Bạn đã quay rồi!")
+    lang = get_language(update)
+
+    if user_spin_status.get(user_id):
+        text = translate({
+            "vi": "⛔ Hôm nay quay rồi nha, tham quá là bị khóa nick đó 😤",
+            "en": "⛔ You've already spun today! Greedy much? 😤"
+        }, lang)
     else:
-        import random
-        prize = random.choice(["🎁 100k", "🎉 50k", "😢 Không trúng"])
-        user_spins[user_id] = prize
-        await update.message.reply_text(f"Kết quả quay: {prize}")
-        await context.bot.send_message(chat_id=ADMIN_ID, text=f"User {user_id} quay được: {prize}")
+        user_spin_status[user_id] = True
+        prize = "🎁 100 xu thần thánh"
+        text = translate({
+            "vi": f"🎉 Chúc mừng! Bạn vừa hốt được {prize}. Đi nhậu được rồi đó!",
+            "en": f"🎉 Congrats! You just won {prize}. Time to party!"
+        }, lang)
+        await context.bot.send_message(chat_id=ADMIN_ID, text=f"🔥 User {user_id} spun and won: {prize}")
 
-# /leaderboard
-async def leaderboard_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = "\n".join([f"{uid}: {prize}" for uid, prize in user_spins.items()])
-    await update.message.reply_text(f"Bảng xếp hạng:\n{text}")
+    await update.message.reply_text(text)
 
-# /dashboard
-async def dashboard_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    total_users = len(user_spins)
-    await update.message.reply_text(f"Tổng số người đã quay: {total_users}")
+async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🏆 Bảng vàng Kèo Sư:\n🥇 Long Rồng - 999 xu\n🥈 Bé Na - 888 xu\n🥉 Bạn - 777 xu")
 
-# /help
+async def dashboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📊 Dashboard của bạn:\n- Số lần quay: 1\n- Tổng xu: 100\n- Độ may mắn: 69%")
+
+async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        f"📞 Hotline cứu trợ: {HOTLINE}\n🔗 Link kiếm tiền: {AFFILIATE_LINK}\n💬 Mã đại lý: {AFFILIATE_CODE}"
+    )
+
+async def keosu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("💸 Kèo thơm hôm nay:\n⚽ Real Madrid thắng 3-1, ăn đủ tiền mua iPhone 17 Pro Max!")
+
+async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("👮‍♂️ Admin Panel: Chỉ dành cho người có mật mã tuyệt mật. Gõ sai là bị hack não!")
+
+async def vpn(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔐 Hướng dẫn VPN:\n1. Tải app 'Ẩn Danh Pro'\n2. Nhập mã 'KEOSU2025'\n3. Lướt web như ninja 🥷")
+
+async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    lang = get_language(update)
+    text = translate({
+        "vi": "📝 Đăng ký ngay tại đây để nhận xu miễn phí: https://form.com/vi",
+        "en": "📝 Register now to get free coins: https://form.com/en"
+    }, lang)
+    await update.message.reply_text(text)
+
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Các lệnh có sẵn: /start /spin /leaderboard /info /keosu")
+    await update.message.reply_text(
+        "🆘 Trợ giúp Kèo Sư:\n"
+        "/start - Khởi động cuộc chơi\n"
+        "/spin - Quay số thần tài\n"
+        "/leaderboard - Bảng vàng đại gia\n"
+        "/dashboard - Thống kê cá nhân\n"
+        "/info - Thông tin đại lý\n"
+        "/keosu - Kèo thơm hôm nay\n"
+        "/admin - Panel tuyệt mật\n"
+        "/vpn - Hướng dẫn lướt web an toàn\n"
+        "/register - Đăng ký nhận thưởng\n"
+        "/odds - Tỷ lệ cược hôm nay"
+    )
 
-# /admin
-async def admin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id == ADMIN_ID:
-        await update.message.reply_text("Chào admin!")
-    else:
-        await update.message.reply_text("Bạn không phải admin.")
+async def odds(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📈 Tỷ lệ cược hôm nay:\nLiverpool vs MU: 2.0 - 3.3 - 3.8\nĐặt kèo đi, đừng chần chừ!")
 
-# Tin nhắn tự do
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.forward_message(chat_id=ADMIN_ID, from_chat_id=update.effective_chat.id, message_id=update.message.message_id)
-
-# odds_command (placeholder)
-async def odds_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Tỷ lệ quay: 50% trúng, 50% không trúng.")
+async def forward_to_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message and update.message.text:
+        await context.bot.send_message(chat_id=ADMIN_ID, text=f"📩 Tin nhắn từ {update.effective_user.id}:\n{update.message.text}")
+        await update.message.reply_text("✅ Tin nhắn đã được gửi đến Kèo Sư. Ngồi đợi hồi âm như đợi crush rep tin nhắn 😎")
