@@ -36,8 +36,9 @@ application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_m
 
 # ▶️ Chạy bot bằng webhook
 if __name__ == "__main__":
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.getenv("PORT", 5000)),
-        webhook_url=WEBHOOK_URL
-    )
+   application.run_webhook(
+    listen="0.0.0.0",
+    port=int(os.getenv("PORT", 5000)),
+    webhook_url=WEBHOOK_URL,
+    webhook_path="/webhook"
+)
