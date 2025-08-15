@@ -12,7 +12,7 @@ from handlers import (
     odds_command, dashboard_command, admin_command,
     handle_message
 )
-from config import BOT_TOKEN, ADMIN_IDS
+from config import BOT_TOKEN
 
 # 🔧 Logging
 logging.basicConfig(
