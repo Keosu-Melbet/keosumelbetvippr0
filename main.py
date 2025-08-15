@@ -44,6 +44,15 @@ def home():
 def ping():
     return "pong"
 
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    json_data = request.get_json(force=True)
+    logging.info(f"📩 Received update: {json_data}")
+    update = Update.de_json(json_data, application.bot)
+    application.update_queue.put(update)
+    return "ok"
+
+
 # ▶️ Khởi động Flask và đăng ký webhook
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
