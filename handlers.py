@@ -49,7 +49,7 @@ async def dashboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"📞 Hotline cứu trợ: {HOTLINE}\n🔗 Link kiếm tiền: {AFFILIATE_LINK}\n💬 Mã đại lý: {AFFILIATE_CODE}"
+        f"📞 Hotline cứu trợ: {HOTLINE}\n🔗 Link kiếm tiền: {AFFILIATE_LINK}\n💬 Mã đại lý: {AGENT_CODE}"
     )
 
 async def keosu(update: Update, context: ContextTypes.DEFAULT_TYPE):
