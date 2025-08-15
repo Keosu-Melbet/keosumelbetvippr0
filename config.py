@@ -3,7 +3,7 @@ import pytz
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL")
-ADMIN_IDS = [5923493385]  # ← Đây là Telegram user ID của bạn
+ADMIN_ID = [5923493385]  # ← Đây là Telegram user ID của bạn
 AFF_LINK = os.getenv("AFF_LINK")
 FORM_LINK_EN = os.getenv("FORM_LINK_EN")
 FORM_LINK_VN = os.getenv("FORM_LINK_VN")
