@@ -16,4 +16,5 @@ TZ = pytz.timezone('Asia/Ho_Chi_Minh')
 DATA_FILE = "users.json"
 DIFY_API_KEY = os.getenv("DIFY_API_KEY")
 DIFY_API_URL = "https://api.dify.ai/v1/chat-messages"
+PORT=8443
 
