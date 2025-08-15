@@ -70,5 +70,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot đã hoạt động!")
 
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info(f"✅ /start received from {update.effective_user.id}")
+    await update.message.reply_text("Bot đã hoạt động qua webhook!")
+
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"Bạn vừa gửi: {update.message.text}")
