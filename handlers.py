@@ -1,9 +1,11 @@
+import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from config import ADMIN_IDS
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info(f"✅ /start received from {update.effective_user.id}")
     keyboard = [
         [InlineKeyboardButton("🇻🇳 Tiếng Việt", callback_data="lang_vi")],
         [InlineKeyboardButton("🇺🇸 English", callback_data="lang_en")]
@@ -65,15 +67,5 @@ async def admin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Tin nhắn thường
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🤖 Bot không hiểu lệnh này. Vui lòng dùng /help.")
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Bot đã hoạt động!")
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info(f"✅ /start received from {update.effective_user.id}")
-    await update.message.reply_text("Bot đã hoạt động qua webhook!")
-
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"Bạn vừa gửi: {update.message.text}")
+    text = update.message.text
+    await update.message.reply_text(f"🤖 Bot nhận được: {text}")
