@@ -1,0 +1,7 @@
+python-telegram-bot==21.0
+httpx==0.28.1
+requests==2.32.3
+pytz
+langdetect
+nest_asyncio
+Flask
