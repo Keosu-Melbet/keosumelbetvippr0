@@ -9,9 +9,10 @@ from telegram.ext import (
 from handlers import (
     start, language_callback, spin_command, register_command,
     vpn_command, leaderboard_command, help_command,
-    odds_command, handle_message
+    odds_command, dashboard_command, admin_command,
+    handle_message
 )
-from config import BOT_TOKEN
+from config import BOT_TOKEN, ADMIN_IDS
 
 # 🔧 Logging
 logging.basicConfig(
@@ -33,6 +34,8 @@ application.add_handler(CommandHandler("vpn", vpn_command))
 application.add_handler(CommandHandler("leaderboard", leaderboard_command))
 application.add_handler(CommandHandler("help", help_command))
 application.add_handler(CommandHandler("odds", odds_command))
+application.add_handler(CommandHandler("dashboard", dashboard_command))
+application.add_handler(CommandHandler("admin", admin_command))
 application.add_handler(CallbackQueryHandler(language_callback))
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
@@ -47,6 +50,11 @@ def webhook():
 @app.route("/")
 def home():
     return "Bot is running via webhook!"
+
+# 🔁 Route ping để giữ bot online
+@app.route("/ping")
+def ping():
+    return "pong"
 
 # ▶️ Khởi động Flask và set webhook
 if __name__ == "__main__":
