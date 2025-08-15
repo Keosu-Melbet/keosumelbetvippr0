@@ -66,3 +66,9 @@ async def admin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Tin nhắn thường
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🤖 Bot không hiểu lệnh này. Vui lòng dùng /help.")
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Bot đã hoạt động!")
+
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(f"Bạn vừa gửi: {update.message.text}")
