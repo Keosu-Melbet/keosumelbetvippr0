@@ -6,7 +6,6 @@ from handlers import (
 )
 
 application = Application.builder().token(BOT_TOKEN).build()
-
 application.add_handler(CommandHandler("start", start))
 application.add_handler(CallbackQueryHandler(language_callback, pattern="^(vi|en|fr|th|id)$"))
 application.add_handler(CommandHandler("spin", spin_wheel))
