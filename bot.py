@@ -156,4 +156,29 @@ async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for i, name in enumerate(get_daily_characters(), 1):
         leaderboard_text += f"{i}. *{name}*: {random.randint(1000, 5000)} Coins\n"
     await update.message.reply_text(responses[lang]["leaderboard"].format(leaderboard_text=leaderboard_text), parse_mode='Markdown')
+
 application = Application.builder
+
+async def main():
+    application = Application.builder().token(BOT_TOKEN).build()
+
+    # Đăng ký các handler
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("spin", spin_wheel))
+    application.add_handler(CommandHandler("register", register))
+    application.add_handler(CommandHandler("vpn", vpn))
+    application.add_handler(CommandHandler("leaderboard", leaderboard))
+    application.add_handler(CommandHandler("help", handle_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(CallbackQueryHandler(language_callback))
+
+    await application.run_polling()
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
+
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
