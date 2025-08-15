@@ -1,4 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from config import BOT_TOKEN, ADMIN_IDS
 from telegram.ext import ContextTypes
 from config import *
 from utils import (
