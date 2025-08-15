@@ -1,10 +1,27 @@
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from config import ADMIN_IDS
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 Xin chào! Bot đang hoạt động.")
+    keyboard = [
+        [InlineKeyboardButton("🇻🇳 Tiếng Việt", callback_data="lang_vi")],
+        [InlineKeyboardButton("🇺🇸 English", callback_data="lang_en")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text("🌐 Vui lòng chọn ngôn ngữ:", reply_markup=reply_markup)
+
+# Callback khi chọn ngôn ngữ
+async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "lang_vi":
+        await query.edit_message_text("✅ Bạn đã chọn Tiếng Việt.\n📝 Vui lòng gửi thông tin đăng ký theo mẫu:\nHọ tên:\nEmail:\nSở thích:")
+    elif query.data == "lang_en":
+        await query.edit_message_text("✅ You selected English.\n📝 Please send your registration info:\nName:\nEmail:\nInterests:")
+    else:
+        await query.edit_message_text("❌ Ngôn ngữ không hợp lệ.")
 
 # /spin
 async def spin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -46,10 +63,6 @@ async def admin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     await update.message.reply_text("✅ Chào admin! Bạn có thể quản lý bot tại đây.")
 
-# Callback (nếu có)
-async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.callback_query.answer("Ngôn ngữ đã được chọn.")
-
 # Tin nhắn thường
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🤖 Bot không hiểu lệnh này.")
+    await update.message.reply_text("🤖 Bot không hiểu lệnh này. Vui lòng dùng /help.")
