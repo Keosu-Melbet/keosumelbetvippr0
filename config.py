@@ -10,7 +10,9 @@ WEB_LINK = os.getenv("WEB_LINK")
 PROMO_CODE = os.getenv("PROMO_CODE")
 PHONE = os.getenv("PHONE")
 EMAIL = os.getenv("EMAIL")
-API_KEY = os.getenv("API_KEY")
 SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
 TZ = pytz.timezone('Asia/Ho_Chi_Minh')
 DATA_FILE = "users.json"
+DIFY_API_KEY = os.getenv("DIFY_API_KEY")
+DIFY_API_URL = "https://api.dify.ai/v1/chat-messages"
+
