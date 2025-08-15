@@ -18,14 +18,14 @@ logging.basicConfig(
 # 🌐 Flask app
 app = Flask(__name__)
 
-# 🚀 Khởi tạo bot
+# 🚀 Khởi tạo bot Telegram
 application = ApplicationBuilder().token(BOT_TOKEN).build()
 
 # 🧩 Đăng ký các handler
 application.add_handler(CommandHandler("start", start))
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-# 📥 Nhận update từ Telegram
+# 📥 Route nhận update từ Telegram
 @app.route("/webhook", methods=["POST"])
 def webhook():
     json_data = request.get_json(force=True)
@@ -34,7 +34,7 @@ def webhook():
     application.update_queue.put(update)
     return "ok"
 
-# 🏠 Trang chủ đơn giản
+# 🏠 Route trang chủ
 @app.route("/")
 def home():
     return "Bot is running via webhook!"
@@ -47,4 +47,6 @@ def ping():
 # ▶️ Khởi động Flask và đăng ký webhook
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    # Đăng ký webhook với Telegram
+    application.bot.set_webhook(WEBHOOK_URL)
     app.run(host="0.0.0.0", port=port)
