@@ -3,7 +3,7 @@ requests==2.32.3
 pytz
 langdetect
 nest_asyncio
-python-telegram-bot==20.3
+python-telegram-bot[webhooks]==20.3
 Flask==2.3.2
 gunicorn==21.2.0
 
